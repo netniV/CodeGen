@@ -58,23 +58,24 @@ namespace CodeGen.Engine
         private method registerTagLoopTokens, void
             endparams
         proc
-			
-			tagLoopTokenExpanders = new Dictionary<string, Func<Token, FileNode, IEnumerable<LoopNode>, string>>()
-			
-			tagLoopTokenExpanders.Add("TAGLOOP_CONNECTOR_C", expandTagConnectorC)
+
+            tagLoopTokenExpanders = new Dictionary<string, Func<Token, FileNode, IEnumerable<LoopNode>, string>>()
+            tagLoopTokenExpanders.Add("TAGLOOP_CONNECTOR_C", expandTagConnectorC)
             tagLoopTokenExpanders.Add("TAGLOOP_CONNECTOR_DBL", expandTagConnectorDbl)
+            tagLoopTokenExpanders.Add("TAGLOOP_CONNECTOR_SQL", expandTagConnectorSql)
             tagLoopTokenExpanders.Add("TAGLOOP_FIELD_ALTNAME", expandTagFieldAltName)
-			tagLoopTokenExpanders.Add("TAGLOOP_FIELD_BASENAME", expandTagFieldBaseName)
-			tagLoopTokenExpanders.Add("TAGLOOP_FIELD_CSTYPE", expandTagFieldCsType)
+            tagLoopTokenExpanders.Add("TAGLOOP_FIELD_BASENAME", expandTagFieldBaseName)
+            tagLoopTokenExpanders.Add("TAGLOOP_FIELD_CSTYPE", expandTagFieldCsType)
             tagLoopTokenExpanders.Add("TAGLOOP_FIELD_NAME", expandTagFieldName)
             tagLoopTokenExpanders.Add("TAGLOOP_FIELD_ODBCNAME", expandTagFieldOdbcName)
             tagLoopTokenExpanders.Add("TAGLOOP_FIELD_ORIGINALNAME", expandTagFieldOrigName)
             tagLoopTokenExpanders.Add("TAGLOOP_FIELD_SQLNAME", expandTagFieldSqlName)
             tagLoopTokenExpanders.Add("TAGLOOP_OPERATOR_C", expandTagOperatorC)
             tagLoopTokenExpanders.Add("TAGLOOP_OPERATOR_DBL", expandTagOperatorDbl)
+            tagLoopTokenExpanders.Add("TAGLOOP_OPERATOR_SQL", expandTagOperatorSql)
             tagLoopTokenExpanders.Add("TAGLOOP_SEQUENCE", expandTagSequence)
             tagLoopTokenExpanders.Add("TAGLOOP_TAG_NAME", expandTagName)
-			tagLoopTokenExpanders.Add("TAGLOOP_TAG_VALUE", expandTagValue)
+            tagLoopTokenExpanders.Add("TAGLOOP_TAG_VALUE", expandTagValue)
 
         endmethod
 
@@ -94,7 +95,7 @@ namespace CodeGen.Engine
             endparams
         proc
             lambda isTagLoop(node) node .is. TagLoopNode
-			data loop, @TagLoopNode, ^as(loops.First(isTagLoop), TagLoopNode)
+            data loop, @TagLoopNode, ^as(loops.First(isTagLoop), TagLoopNode)
             mreturn specific(template.Context.CurrentStructure, loop.CurrentTag, loop.CurrentIndex)
         endmethod
 
@@ -133,6 +134,28 @@ namespace CodeGen.Engine
                     mreturn ".AND."
                 (RpsTagComparison.CompareOr),
                     mreturn ".OR."
+                (RpsTagComparison.None),
+                    mreturn ""
+                (),
+                    mreturn ""
+                endusing
+            end
+            mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
+        endmethod
+
+        private static method expandTagConnectorDbl, string
+            tkn, @Token 
+            template, @FileNode 
+            loops, @IEnumerable<LoopNode> 
+            endparams
+        proc
+            lambda doExpand(str, tag, index)
+            begin
+                using (tag.ComparisonConnector) select
+                (RpsTagComparison.CompareAnd),
+                    mreturn "AND"
+                (RpsTagComparison.CompareOr),
+                    mreturn "OR"
                 (RpsTagComparison.None),
                     mreturn ""
                 (),
@@ -188,38 +211,38 @@ namespace CodeGen.Engine
             mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
         endmethod
 
-		private static method expandTagFieldCsType, string
-			tkn, @Token 
-			template, @FileNode 
-			loops, @IEnumerable<LoopNode> 
-			endparams
-		proc
-			lambda doExpand(str, tag, index)
-			begin
-				data value, string, ""
-				data field, @RpsField
-				foreach field in str.Fields
-				begin
-                    if (field.OriginalName == tag.Field)
-					begin
-						value = field.CsType
-						exitloop
-					end
-				end
-				mreturn value
-			end
-			mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
-		endmethod
-
-		private static method expandTagFieldName, string
+        private static method expandTagFieldCsType, string
             tkn, @Token 
             template, @FileNode 
             loops, @IEnumerable<LoopNode> 
             endparams
-		proc
-			lambda doExpand(str, tag, index) tag.Field
-			mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
-		endmethod
+        proc
+            lambda doExpand(str, tag, index)
+            begin
+                data value, string, ""
+                data field, @RpsField
+                foreach field in str.Fields
+                begin
+                    if (field.OriginalName == tag.Field)
+                    begin
+                        value = field.CsType
+                        exitloop
+                    end
+                end
+                mreturn value
+            end
+            mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
+        endmethod
+
+        private static method expandTagFieldName, string
+            tkn, @Token 
+            template, @FileNode 
+            loops, @IEnumerable<LoopNode> 
+            endparams
+        proc
+            lambda doExpand(str, tag, index) tag.Field
+            mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
+        endmethod
 
         private static method expandTagFieldOdbcName, string
             tkn, @Token 
@@ -346,6 +369,34 @@ namespace CodeGen.Engine
             mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
         endmethod
 
+        private static method expandTagOperatorSQL, string
+            tkn, @Token 
+            template, @FileNode 
+            loops, @IEnumerable<LoopNode> 
+            endparams
+        proc
+            lambda doExpand(str, tag, index)
+            begin
+                data value, string, ""
+                using (tag.ComparisonOperator) select
+                (RpsTagOperator.OpEQ),
+                    value = "="
+                (RpsTagOperator.OpGE),
+                    value = ">="
+                (RpsTagOperator.OpGT),
+                    value = ">"
+                (RpsTagOperator.OpLE),
+                    value = "<="
+                (RpsTagOperator.OpLT),
+                    value = "<"
+                (RpsTagOperator.OpNE),
+                    value = "!="
+                endusing
+                mreturn value
+            end
+            mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
+        endmethod
+
         private static method expandTagSequence, string
             tkn, @Token 
             template, @FileNode 
@@ -381,22 +432,22 @@ namespace CodeGen.Engine
                     if (field.OriginalName == tag.Field)
                     begin
                         using (field.DataType) select
-						(RpsFieldDataType.Alpha, RpsFieldDataType.User),
-						begin
-							data tmplen, int, field.Size
-							if (tmplen > 15)
-								tmplen = 15
-							if (tag.ComparisonValue.Length > 0) then
-							begin
-								data tmpval, a15, tag.ComparisonValue
-								value = String.Format("""{0}""", tmpval(1:tmplen))
-							end
-							else
-							begin
-								data spaces, a15, " " ;15 is the max length of a tag comparison in RPS
-								value = String.Format("""{0}""", spaces(1:tmplen))
-							end
-						end
+                        (RpsFieldDataType.Alpha, RpsFieldDataType.User),
+                        begin
+                            data tmplen, int, field.Size
+                            if (tmplen > 15)
+                                tmplen = 15
+                            if (tag.ComparisonValue.Length > 0) then
+                            begin
+                                data tmpval, a15, tag.ComparisonValue
+                                value = String.Format("""{0}""", tmpval(1:tmplen))
+                            end
+                            else
+                            begin
+                                data spaces, a15, " " ;15 is the max length of a tag comparison in RPS
+                                value = String.Format("""{0}""", spaces(1:tmplen))
+                            end
+                        end
                         (),
                             value = tag.ComparisonValue
                         endusing
@@ -407,8 +458,8 @@ namespace CodeGen.Engine
             end
             mreturn ExpandTagLoopToken(tkn, template, loops, doExpand)
         endmethod
-	
-	endclass
+    
+    endclass
 
 endnamespace
 

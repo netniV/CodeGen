@@ -1252,6 +1252,13 @@ namespace UnitTests
 		
 		{TestMethod}
 		{TestCategory("Tokenizer - Expansion Tokens")}
+		public method TagLoopConnectorSql, void
+		proc
+			Assert.IsTrue(tokenizeExpansionToken("TAGLOOP_CONNECTOR_SQL",TokenType.TagLoop))
+		endmethod
+		
+		{TestMethod}
+		{TestCategory("Tokenizer - Expansion Tokens")}
 		public method TagLoopFieldAltName, void
 		proc
 			Assert.IsTrue(tokenizeExpansionToken("TAGLOOP_FIELD_ALTNAME",TokenType.TagLoop))
@@ -1304,6 +1311,13 @@ namespace UnitTests
 		public method TagLoopOperatorDbl, void
 		proc
 			Assert.IsTrue(tokenizeExpansionToken("TAGLOOP_OPERATOR_DBL",TokenType.TagLoop))
+		endmethod
+
+		{TestMethod}
+		{TestCategory("Tokenizer - Expansion Tokens")}
+		public method TagLoopOperatorSql, void
+		proc
+			Assert.IsTrue(tokenizeExpansionToken("TAGLOOP_OPERATOR_SQL",TokenType.TagLoop))
 		endmethod
 		
 		{TestMethod}

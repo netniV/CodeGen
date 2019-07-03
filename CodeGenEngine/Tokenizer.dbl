@@ -484,6 +484,7 @@ namespace CodeGen.Engine
             &    
             &    { new TokenMeta() {Name = "TAGLOOP_CONNECTOR_C", TypeOfToken = TokenType.TagLoop, IsPaired = false, Validity = TokenValidity.TagLoop, RequiresRepository = true} }, 
             &    { makeTokenMeta_UpperLower ("TAGLOOP_CONNECTOR_DBL", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
+            &    { makeTokenMeta_UpperLower ("TAGLOOP_CONNECTOR_SQL", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
             &    { makeTokenMeta_AllVariants("TAGLOOP_FIELD_ALTNAME", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
             &    { makeTokenMeta_AllVariants("TAGLOOP_FIELD_BASENAME", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
             &    { makeTokenMeta_AllVariants("TAGLOOP_FIELD_CSTYPE", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
@@ -492,6 +493,7 @@ namespace CodeGen.Engine
             &    { makeTokenMeta_AllVariants("TAGLOOP_FIELD_ORIGINALNAME", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
             &    { makeTokenMeta_AllVariants("TAGLOOP_FIELD_SQLNAME", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
             &    { makeTokenMeta_UpperLower ("TAGLOOP_OPERATOR_DBL", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
+            &    { makeTokenMeta_UpperLower ("TAGLOOP_OPERATOR_SQL", TokenType.TagLoop, TokenValidity.TagLoop, true) }, 
             &    { new TokenMeta() {Name = "TAGLOOP_OPERATOR_C", TypeOfToken = TokenType.TagLoop, IsPaired = false, Validity = TokenValidity.TagLoop, RequiresRepository = true} }, 
             &    { new TokenMeta() {Name = "TAGLOOP_SEQUENCE", TypeOfToken = TokenType.TagLoop, IsPaired = false, Validity = TokenValidity.TagLoop, RequiresRepository = true} }, 
             &    { new TokenMeta() {Name = "TAGLOOP_TAG_NAME", TypeOfToken = TokenType.TagLoop, IsPaired = false, Validity = TokenValidity.TagLoop, RequiresRepository = true} }, 
